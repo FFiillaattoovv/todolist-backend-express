@@ -7,13 +7,14 @@ type AuthorizationPropsType = {
         email: string,
         password: string
     }
+    registerHandler: () => void
 }
 
-export const Authorization: FC<AuthorizationPropsType> = ({changeHandler, form: {email, password}}) => {
+export const Authorization: FC<AuthorizationPropsType> = ({changeHandler, form: {email, password}, registerHandler}) => {
     return (
         <>
             <h3>Sign in</h3>
-            <form className="form form-login">
+            <form className="form form-login" onSubmit={(e) => e.preventDefault()}>
                 <div className="row">
                     <div className="input-field col s12">
                         <input type="email"
@@ -35,7 +36,7 @@ export const Authorization: FC<AuthorizationPropsType> = ({changeHandler, form: 
                     </div>
                 </div>
                 <div className="row">
-                    <button className="wawes-effect wawes-light btn blue">Sign in</button>
+                    <button className="wawes-effect wawes-light btn blue" onClick={registerHandler}>Sign in</button>
                     <Link to="/registration" className="btn-outline btn-reg">Don't have an account?</Link>
                 </div>
             </form>

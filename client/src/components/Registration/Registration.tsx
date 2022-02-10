@@ -7,13 +7,14 @@ type RegistrationPropsType = {
         email: string,
         password: string
     }
+    registerHandler: () => void
 }
 
-export const Registration: FC<RegistrationPropsType> = ({changeHandler, form: {email, password}}) => {
+export const Registration: FC<RegistrationPropsType> = ({changeHandler, form: {email, password}, registerHandler}) => {
     return (
         <>
             <h3>Sign up</h3>
-            <form className="form form-login">
+            <form className="form form-login" onSubmit={(e) => e.preventDefault()}>
                 <div className="row">
                     <div className="input-field col s12">
                         <input type="email"
@@ -35,7 +36,7 @@ export const Registration: FC<RegistrationPropsType> = ({changeHandler, form: {e
                     </div>
                 </div>
                 <div className="row">
-                    <button className="wawes-effect wawes-light btn blue">Register</button>
+                    <button className="wawes-effect wawes-light btn blue" onClick={registerHandler}>Register</button>
                     <Link to="/login" className="btn-outline btn-reg">Do you already have an account?</Link>
                 </div>
             </form>

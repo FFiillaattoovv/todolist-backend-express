@@ -1,55 +1,49 @@
-import React from 'react';
+import React, {ChangeEvent, useState} from 'react';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 import './AuthPage.scss';
+import {Registration} from "../../components/Registration/Registration";
+import {Authorization} from "../../components/Authorization/Authorization";
+import axios from "axios";
 
 const AuthPage = () => {
+    const [form, setForm] = useState({
+        email: '',
+        password: '',
+    });
+
+    const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        setForm({...form, [event.target.name]: event.target.value});
+    };
+
+    const registerHandler = async () => {
+        try {
+            await axios.post('/api/auth/registration', {...form}, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => console.log(response));
+        } catch (e) {
+            console.log(e);
+        }
+    };
     return (
-        <React.Fragment>
+        <BrowserRouter>
             <div className="container">
                 <div className="auth-page">
-                    <h3>Authorization</h3>
-                    <form className="form form-login">
-                        <div className="row">
-                            <div className="input-field col s12">
-                                <input type="email" name="email" className="validate"/>
-                                <label htmlFor="email">Email</label>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="input-field col s12">
-                                <input type="password" name="email" className="validate"/>
-                                <label htmlFor="password">Password</label>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <button className="wawes-effect wawes-light btn blue">Sign in</button>
-                            <a href="" className="btn-outline btn-reg">Don't have an account?</a>
-                        </div>
-                    </form>
-
-
-                    <h3>Registration</h3>
-                    <form className="form form-login">
-                        <div className="row">
-                            <div className="input-field col s12">
-                                <input type="email" name="email" className="validate"/>
-                                <label htmlFor="email">Email</label>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="input-field col s12">
-                                <input type="password" name="email" className="validate"/>
-                                <label htmlFor="password">Password</label>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <button className="wawes-effect wawes-light btn blue">Register</button>
-                            <a href="" className="btn-outline btn-reg">Do you already have an account?</a>
-                        </div>
-                    </form>
+                    <Routes>
+                        <Route path="/login" element={<Authorization changeHandler={changeHandler}
+                                                                     form={form}
+                                                                     registerHandler={registerHandler}/>}/>
+                        <Route path="/registration"
+                               element={<Registration changeHandler={changeHandler}
+                                                      form={form}
+                                                      registerHandler={registerHandler}/>}/>
+                    </Routes>
                 </div>
             </div>
-        </React.Fragment>
+        </BrowserRouter>
     );
 };
 
