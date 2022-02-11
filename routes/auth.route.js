@@ -1,10 +1,22 @@
 const { Router } = require('express');
 const User = require('../models/User');
+const { check, validationResult } = require('express-validator');
 
 const router = Router();
 
-router.post('/registration', async (req, res) => {
+router.post('/registration', [
+    check('email', 'Incorrect email!').isEmail(),
+    check('password', 'Incorrect password! Min 6!').isLength({ min: 6 })
+], async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array(),
+                message: 'Incorrect data during registration.'
+            })
+        }
+
         const { email, password } = req.body;
         const isUsed = await User.findOne({ email });
 
