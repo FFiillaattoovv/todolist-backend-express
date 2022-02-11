@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const User = require('../models/User');
 const { check, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
 
 const router = Router();
 
@@ -14,7 +15,7 @@ router.post('/registration', [
             return res.status(400).json({
                 errors: errors.array(),
                 message: 'Incorrect data during registration.'
-            })
+            });
         }
 
         const { email, password } = req.body;
@@ -24,8 +25,10 @@ router.post('/registration', [
             return res.status(300).json({ message: 'This email is already taken, please try another one.' });
         }
 
+        const hashedPassword = await bcrypt.hash(password, 12);
+
         const user = new User({
-            email, password
+            email, password: hashedPassword
         });
 
         await user.save((err) => {
