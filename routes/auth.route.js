@@ -2,6 +2,7 @@ const { Router } = require('express');
 const User = require('../models/User');
 const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const router = Router();
 
@@ -37,6 +38,44 @@ router.post('/registration', [
         });
 
         res.status(201).json({ message: 'User created!' });
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+router.post('/login', [
+    check('email', 'Incorrect email!').isEmail(),
+    check('password', 'Incorrect password! Min 6!').exists()
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array(),
+                message: 'Incorrect data during registration.'
+            });
+        }
+
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'This email was not found' });
+        }
+
+        const isMatch = bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(400).json({ message: 'This password is incorrect' });
+        }
+
+        const jwtSecret = 'huigf545dwsdfcjhvbouiuy7t7r45wcc4stry5e4wry65635243213wrfcf';
+
+        const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '1h' });
+
+        res.json({ token, userId: user.id })
+
     } catch (e) {
         console.log(e);
     }
